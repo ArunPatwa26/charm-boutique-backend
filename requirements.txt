@@ -1,0 +1,17 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+python-dotenv==1.0.0
+motor==3.3.2
+pymongo==4.5.0
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+email-validator==2.1.0
+cloudinary==1.36.0
+pillow==10.1.0
+razorpay==1.4.2
+httpx==0.25.1
+Jinja2==3.1.2
+fastapi-socketio==0.0.10
+python-socketio==5.10.0
+aiofiles==23.2.1
