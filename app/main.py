@@ -49,16 +49,17 @@ app = FastAPI(
 # IMPORTANT: Add this before routes
 # ============================================================
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://the-charm-boutique.vercel.app/",
-     
+        "https://the-charm-boutique.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # ============================================================
