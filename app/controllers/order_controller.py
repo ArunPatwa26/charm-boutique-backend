@@ -358,6 +358,10 @@ async def get_order_by_id(
 # ADMIN: GET ALL ORDERS
 # ============================================================
 
+# ============================================================
+# ADMIN: GET ALL ORDERS
+# ============================================================
+
 async def admin_get_orders(
     page: int = 1,
     limit: int = 10,
@@ -366,6 +370,7 @@ async def admin_get_orders(
 ) -> dict:
     """
     Get all orders (admin only).
+    Embeds payment proof data for each order that has one.
     """
     db = get_database()
 
@@ -399,12 +404,28 @@ async def admin_get_orders(
     for order in orders:
         user_id_obj = order.get("user")
 
-        # Only query user if it's a valid ObjectId
+        # Fetch user details
         if isinstance(user_id_obj, ObjectId):
             user = await db.users.find_one({"_id": user_id_obj})
             if user:
                 order["user_name"] = user.get("name", "Unknown")
                 order["user_email"] = user.get("email", "Unknown")
+
+        # EMBED PAYMENT PROOF — so admin can verify from orders page
+        proof = await db.payment_proofs.find_one({"order": order["_id"]})
+        if proof:
+            order["payment_proof_data"] = {
+                "id": str(proof["_id"]),
+                "screenshot_url": proof.get("screenshot_url"),
+                "screenshot_public_id": proof.get("screenshot_public_id"),
+                "customer_note": proof.get("customer_note"),
+                "status": proof.get("status"),
+                "submitted_at": proof.get("created_at"),
+                "verified_at": proof.get("verified_at"),
+                "rejection_reason": proof.get("rejection_reason"),
+            }
+        else:
+            order["payment_proof_data"] = None
 
         # Convert + normalize
         order = convert_objectid_to_str(order)
@@ -424,7 +445,6 @@ async def admin_get_orders(
             "pages": (total + limit - 1) // limit,
         },
     }
-
 
 # ============================================================
 # ADMIN: UPDATE ORDER
